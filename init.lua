@@ -19,7 +19,6 @@
 ========                                                     ========
 =====================================================================
 =====================================================================
-
 What is Kickstart?
 
   Kickstart.nvim is *not* a distribution.
@@ -87,8 +86,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = 'ò'
+vim.g.maplocalleader = 'ò'
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
@@ -105,10 +104,10 @@ vim.o.number = true
 -- vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = 'a'
+-- vim.o.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
-vim.o.showmode = false
+-- vim.o.showmode = false
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
@@ -185,10 +184,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -198,6 +197,30 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Window resizing
+vim.keymap.set('n', '<C-S-k>', '<cmd>resize +5<CR>', { desc = 'Increase window height' })
+vim.keymap.set('n', '<C-S-j>', '<cmd>resize -5<CR>', { desc = 'Decrease window height' })
+vim.keymap.set('n', '<C-S-l>', '<cmd>vertical resize -5<CR>', { desc = 'Decrease window width' })
+vim.keymap.set('n', '<C-S-h>', '<cmd>vertical resize +5<CR>', { desc = 'Increase window width' })
+
+-- Open terminal in horizontal split
+vim.keymap.set('n', '<leader>tt', ':split | terminal<CR>i', { desc = 'Open [T]erminal in [H]orizontal split' })
+
+-- Save
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = 'Save file' })
+-- Quit
+vim.keymap.set('n', '<leader>q', ':q<CR>', { desc = 'Quit' })
+-- Save and Quit
+vim.keymap.set('n', '<leader>wq', ':wq<CR>', { desc = 'Save file' })
+
+-- Set tab width to 4 spaces
+vim.o.tabstop = 4 -- Width of tab character
+vim.o.softtabstop = 4 -- Fine tunes the amount of whitespace to be added
+vim.o.shiftwidth = 4 -- Number of spaces to use for each step of (auto)indent
+vim.o.expandtab = true -- Use spaces instead of tabs
+
+vim.cmd.colorscheme 'default'
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -394,7 +417,7 @@ require('lazy').setup({
       -- a corresponding preview of the help.
       --
       -- Two important keymaps to use while in Telescope are:
-      --  - Insert mode: <c-/>
+      --  - Insert mode: <C-/> NOTE(tommaso): does not seems to work
       --  - Normal mode: ?
       --
       -- This opens a window that shows you all of the keymaps for the current
@@ -671,9 +694,9 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -722,6 +745,7 @@ require('lazy').setup({
       require('mason-lspconfig').setup {
         ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
         automatic_installation = false,
+        automatic_enable = true,
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
@@ -869,7 +893,7 @@ require('lazy').setup({
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
@@ -877,25 +901,25 @@ require('lazy').setup({
   },
 
   { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
+    --  -- Change the name of the colorscheme plugin below, and then
+    --  -- change the command in the config to whatever the name of that colorscheme is.
+    --  --
+    --  -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+    --  'folke/tokyonight.nvim',
+    --  priority = 1000, -- Make sure to load this before all the other start plugins.
+    --  config = function()
+    --    ---@diagnostic disable-next-line: missing-fields
+    --    require('tokyonight').setup {
+    --      styles = {
+    --        comments = { italic = false }, -- Disable italics in comments
+    --      },
+    --    }
 
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-    end,
+    --    -- Load the colorscheme here.
+    --    -- Like many other themes, this one has different styles, and you could load
+    --    -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+    --    vim.cmd.colorscheme 'tokyonight-night'
+    --  end,
   },
 
   -- Highlight todo, notes, etc in comments
@@ -976,9 +1000,9 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
